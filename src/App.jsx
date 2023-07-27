@@ -1,75 +1,54 @@
-import { useState } from 'react'
-import './styles.css'
+import { useEffect, useState } from 'react';
+import { NewTodoForm } from './NewTodoForm';
+import { TodoList } from './TodoList';
+import './styles.css';
 
 export default function App() {
-  const [newItem, setNewItem] = useState('')
-  const [todos, setTodos] = useState([])
+  const [todos, setTodos] = useState(() => {
+    const localValue = localStorage.getItem('ITEMS');
+    if (localValue == null) return [];
+    return JSON.parse(localValue);
+  });
 
-  function handleSubmit(e) {
-    e.preventDefault()
-    setTodos(prevTodos => {
+  useEffect(() => {
+    localStorage.setItem('ITEMS', JSON.stringify(todos));
+  }, [todos]);
+
+  function addTodo(title) {
+    setTodos((prevTodos) => {
       return [
         ...prevTodos,
         {
           id: crypto.randomUUID(),
-          title: newItem,
+          title,
           isCompleted: false,
         },
-      ]
-    })
-    setNewItem('')
+      ];
+    });
   }
 
   function toggleTodo(id, isCompleted) {
-    setTodos(prevTodos => {
-      return prevTodos.map(todo => {
+    setTodos((prevTodos) => {
+      return prevTodos.map((todo) => {
         if (todo.id === id) {
-          return { ...todo, isCompleted }
+          return { ...todo, isCompleted };
         }
-        return todo
-      })
-    })
+        return todo;
+      });
+    });
   }
 
   function deleteTodo(id) {
-    setTodos(prevTodos => {
-      return prevTodos.filter(todo => todo.id !== id)
-    })
+    setTodos((prevTodos) => {
+      return prevTodos.filter((todo) => todo.id !== id);
+    });
   }
 
   return (
     <>
-      <form onSubmit={handleSubmit} className='new-item-form'>
-        <div className='form-row'>
-          <label htmlFor='item'>New Item</label>
-          <input
-            value={newItem}
-            onChange={e => setNewItem(e.target.value)}
-            type='text'
-            id='item'
-          />
-        </div>
-        <button className='btn'>Add</button>
-      </form>
-      <h1 className='header'>ToDo List</h1>
-      <ul className='list'>
-        {todos.length === 0 && 'No ToDos'}
-        {todos.map(todo => {
-          return (
-            <li key={todo.id}>
-              <label>
-                <input
-                  type='checkbox'
-                  checked={todo.isCompleted}
-                  onChange={e => toggleTodo(todo.id, e.target.checked)}
-                />
-                {todo.title}
-              </label>
-              <button onClick={() => deleteTodo(todo.id)} className='btn btn-danger'>Delete</button>
-            </li>
-          )
-        })}
-      </ul>
+      <NewTodoForm addTodo={addTodo} />
+      <h1 className="header">ToDo List</h1>
+      <TodoList todos={todos} toggleTodo={toggleTodo} deleteTodo={deleteTodo} />
     </>
-  )
+  );
 }
