@@ -1,8 +1,8 @@
-# react-todo-list
+# react-todo-list-tut
 
 A basic React ToDo list app.
 
-Tutorial by Web Dev Simplified: https://www.youtube.com/watch?v=Rh3tobg7hEo
+Tutorial by Web Dev Simplified: <https://www.youtube.com/watch?v=Rh3tobg7hEo>
 
 ---
 
